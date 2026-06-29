@@ -603,7 +603,7 @@ let lastSync = null;
 let syncing = false;
 let expandedId = null;
 
-const STATUS_FILTERS = ['All', 'For Delivery', 'Confirmed', 'Paid', 'Lead', 'Delivered'];
+const STATUS_FILTERS = ['All', 'Pending', 'Done'];
 
 const STATUS_META = {
   'For Delivery':    { dot: 's-for-delivery',  badge: 'badge-for-delivery',  label: 'For Delivery' },
@@ -755,7 +755,7 @@ function renderHeader() {
 
 // ── RENDER TICKER ─────────────────────────────────────────────────────────────
 function renderTicker() {
-  const active = allOrders.filter(o => ['For Delivery','Confirmed','Paid'].includes(o.status));
+  const active = allOrders.filter(o => ['Pending'].includes(o.status));
   const items = active.length ? active : allOrders.slice(0,6);
   const html = items.map(o => {
     const m = STATUS_META[o.status] || {};
@@ -773,10 +773,10 @@ function renderKPIs() {
   const todayCount = allOrders.filter(o => (o.date||'').startsWith(todayStr)).length;
 
   const cards = [
-    { cls:'kpi-delivery',  icon:'🚚', val:count('For Delivery'),  label:'For Delivery', filter:'For Delivery' },
-    { cls:'kpi-confirmed', icon:'📋', val:count('Confirmed'),      label:'Confirmed',    filter:'Confirmed' },
-    { cls:'kpi-paid',      icon:'💰', val:count('Paid'),           label:'Paid',         filter:'Paid' },
-    { cls:'kpi-today',     icon:'📅', val:todayCount,              label:'Today\'s Orders', filter:null },
+    { cls:'kpi-delivery',  icon:'📦', val:count('Pending'),  label:'Pending',       filter:'Pending' },
+    { cls:'kpi-confirmed', icon:'⚓', val:allOrders.filter(o=>o.maritime==='Yes').length, label:'Maritime', filter:null },
+    { cls:'kpi-paid',      icon:'⭐', val:allOrders.filter(o=>o.priority==='Yes').length, label:'Priority', filter:null },
+    { cls:'kpi-today',     icon:'📅', val:todayCount,         label:"Today's Orders", filter:null },
   ];
 
   const wrap = document.getElementById('kpiGrid');
@@ -808,23 +808,27 @@ function renderOrders() {
       <div class="status-indicator ${m.dot}"></div>
       <div class="order-main">
         <div class="order-name">${esc(o.name)}</div>
-        <div class="order-meta">${esc(o.id||'')}${o.hdd ? ' · ' + esc(o.hdd) : ''}${o.maritime==='Yes' ? ' · ⚓ Maritime' : ''}</div>
+        <div class="order-meta">${esc(o.id||'')}${o.hdd ? ' · ' + esc(o.hdd) : ''}${o.priority==='Yes' ? ' · ⭐ Priority' : ''}</div>
       </div>
       <div class="order-badge ${m.badge}">${m.label}</div>
       ${isExp ? `
       <div class="order-detail" onclick="event.stopPropagation()">
-        ${o.fbName       ? `<div class="order-detail-row"><span class="detail-label">FB Name</span><span class="detail-value">${esc(o.fbName)}</span></div>` : ''}
-        ${o.contact      ? `<div class="order-detail-row"><span class="detail-label">Contact</span><span class="detail-value">${esc(o.contact)}</span></div>` : ''}
-        ${o.address      ? `<div class="order-detail-row"><span class="detail-label">Address</span><span class="detail-value">${esc(o.address)}</span></div>` : ''}
-        ${o.landmark     ? `<div class="order-detail-row"><span class="detail-label">Landmark</span><span class="detail-value">${esc(o.landmark)}</span></div>` : ''}
-        ${o.hdd          ? `<div class="order-detail-row"><span class="detail-label">HDD</span><span class="detail-value">${esc(o.hdd)} ${o.format ? '· ' + esc(o.format) : ''}</span></div>` : ''}
-        ${o.amount       ? `<div class="order-detail-row"><span class="detail-label">Amount</span><span class="detail-value">${esc(o.amount)}${o.paymentMethod ? ' · ' + esc(o.paymentMethod) : ''}</span></div>` : ''}
-        ${o.maritime     ? `<div class="order-detail-row"><span class="detail-label">Maritime</span><span class="detail-value">${esc(o.maritime)}</span></div>` : ''}
-        ${o.tracking     ? `<div class="order-detail-row"><span class="detail-label">Lalamove</span><span class="detail-value" style="word-break:break-all">${esc(o.tracking)}</span></div>` : ''}
-        ${o.riderStatus  ? `<div class="order-detail-row"><span class="detail-label">Rider</span><span class="detail-value">${esc(o.riderStatus)}</span></div>` : ''}
-        ${o.totalSize    ? `<div class="order-detail-row"><span class="detail-label">Est. Size</span><span class="detail-value">${esc(o.totalSize)}</span></div>` : ''}
-        ${o.date         ? `<div class="order-detail-row"><span class="detail-label">Date</span><span class="detail-value">${esc(o.date)}</span></div>` : ''}
-        ${o.notes        ? `<div class="order-detail-row"><span class="detail-label">Notes</span><span class="detail-value">${esc(o.notes)}</span></div>` : ''}
+        ${o.fbName          ? `<div class="order-detail-row"><span class="detail-label">FB Name</span><span class="detail-value">${esc(o.fbName)}</span></div>` : ''}
+        ${o.contact         ? `<div class="order-detail-row"><span class="detail-label">Contact</span><span class="detail-value">${esc(o.contact)}</span></div>` : ''}
+        ${o.address         ? `<div class="order-detail-row"><span class="detail-label">Address</span><span class="detail-value">${esc(o.address)}</span></div>` : ''}
+        ${o.landmark        ? `<div class="order-detail-row"><span class="detail-label">Landmark</span><span class="detail-value">${esc(o.landmark)}</span></div>` : ''}
+        ${o.brandModel      ? `<div class="order-detail-row"><span class="detail-label">Brand/Model</span><span class="detail-value">${esc(o.brandModel)}</span></div>` : ''}
+        ${o.hdd             ? `<div class="order-detail-row"><span class="detail-label">Capacity</span><span class="detail-value">${esc(o.hdd)}${o.format ? ' · ' + esc(o.format) : ''}</span></div>` : ''}
+        ${o.requestedTitles ? `<div class="order-detail-row"><span class="detail-label">Requested</span><span class="detail-value">${esc(o.requestedTitles)}</span></div>` : ''}
+        ${o.toDownload      ? `<div class="order-detail-row"><span class="detail-label">To Download</span><span class="detail-value">${esc(o.toDownload)}</span></div>` : ''}
+        ${o.downloaded      ? `<div class="order-detail-row"><span class="detail-label">Downloaded ✅</span><span class="detail-value">${esc(o.downloaded)}</span></div>` : ''}
+        ${o.totalSize       ? `<div class="order-detail-row"><span class="detail-label">Est. Size</span><span class="detail-value">${esc(o.totalSize)} GB</span></div>` : ''}
+        ${o.amount          ? `<div class="order-detail-row"><span class="detail-label">Amount</span><span class="detail-value">${esc(o.amount)}${o.paymentMethod ? ' · ' + esc(o.paymentMethod) : ''}</span></div>` : ''}
+        ${o.maritime        ? `<div class="order-detail-row"><span class="detail-label">Maritime</span><span class="detail-value">${esc(o.maritime)}</span></div>` : ''}
+        ${o.tracking        ? `<div class="order-detail-row"><span class="detail-label">Lalamove</span><span class="detail-value" style="word-break:break-all">${esc(o.tracking)}</span></div>` : ''}
+        ${o.riderStatus     ? `<div class="order-detail-row"><span class="detail-label">Rider</span><span class="detail-value">${esc(o.riderStatus)}</span></div>` : ''}
+        ${o.targetDate      ? `<div class="order-detail-row"><span class="detail-label">Target Date</span><span class="detail-value">${esc(o.targetDate)}</span></div>` : ''}
+        ${o.notes           ? `<div class="order-detail-row"><span class="detail-label">Notes</span><span class="detail-value">${esc(o.notes)}</span></div>` : ''}
         <div class="order-actions">
           ${o.contact  ? `<a class="action-btn" href="tel:${esc(o.contact)}" onclick="event.stopPropagation()">📞 Call</a>` : ''}
           ${o.tracking ? `<button class="action-btn" onclick="event.stopPropagation();copyText('${esc(o.tracking)}')">📋 Copy Link</button>` : ''}
