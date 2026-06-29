@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1628" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Onboard Stuff — Ops</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0A1628;
+      --navy-card: #1E3A5F;
+      --navy-soft: #162840;
+      --cyan:      #00D4FF;
+      --cyan-dim:  rgba(0, 212, 255, 0.15);
+      --cyan-glow: rgba(0, 212, 255, 0.35);
+      --alert:     #FF6B35;
+      --alert-dim: rgba(255, 107, 53, 0.15);
+      --green:     #2ECC71;
+      --green-dim: rgba(46, 204, 113, 0.15);
+      --yellow:    #F39C12;
+      --yellow-dim:rgba(243, 156, 18, 0.15);
+      --text:      #F0F4FF;
+      --text-muted:#8BA3C4;
+      --border:    rgba(0, 212, 255, 0.12);
+      --radius:    12px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      background: var(--navy);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: var(--navy-soft);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      height: 36px;
+      display: flex;
+      align-items: center;
+    }
+    .ticker-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      padding: 0 14px;
+      white-space: nowrap;
+      border-right: 1px solid var(--border);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      background: var(--navy);
+    }
+    .ticker-track {
+      display: flex;
+      gap: 40px;
+      animation: ticker 28s linear infinite;
+      white-space: nowrap;
+      padding-left: 24px;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-item {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .ticker-item .name { color: var(--text); }
+    .ticker-item .status-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 16px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-glow);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .brand-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-name span { color: var(--cyan); }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sync-btn {
+      background: var(--cyan-dim);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--cyan);
+      padding: 6px 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .sync-btn:hover { background: rgba(0, 212, 255, 0.25); }
+    .sync-btn svg { width: 13px; height: 13px; }
+    .sync-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .last-sync {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── MAIN ── */
+    main { padding: 16px; max-width: 520px; margin: 0 auto; }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 11px 12px 11px 38px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--cyan-glow); }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .kpi-card:active { transform: scale(0.97); }
+    .kpi-card.active { border-color: var(--cyan-glow); }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .kpi-card.kpi-delivery::before { background: var(--alert); }
+    .kpi-card.kpi-confirmed::before { background: var(--cyan); }
+    .kpi-card.kpi-paid::before { background: var(--green); }
+    .kpi-card.kpi-today::before { background: var(--yellow); }
+    .kpi-icon { font-size: 20px; margin-bottom: 8px; }
+    .kpi-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .kpi-card.kpi-delivery .kpi-value { color: var(--alert); }
+    .kpi-card.kpi-confirmed .kpi-value { color: var(--cyan); }
+    .kpi-card.kpi-paid .kpi-value { color: var(--green); }
+    .kpi-card.kpi-today .kpi-value { color: var(--yellow); }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .kpi-skeleton .kpi-value {
+      background: var(--navy-soft);
+      border-radius: 4px;
+      height: 28px;
+      width: 40px;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .chip:hover, .chip.active {
+      background: var(--cyan-dim);
+      border-color: var(--cyan-glow);
+      color: var(--cyan);
+    }
+
+    /* ── ORDER CARDS ── */
+    .orders-list { display: flex; flex-direction: column; gap: 8px; }
+    .order-card {
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .order-card:hover { border-color: rgba(0, 212, 255, 0.25); background: #1a3350; }
+    .order-card.expanded { border-color: var(--cyan-glow); }
+    .status-indicator {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .order-main { flex: 1; min-width: 0; }
+    .order-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .order-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .order-detail {
+      display: none;
+      padding: 0 14px 13px 36px;
+      border-top: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .order-card.expanded .order-detail { display: block; }
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .order-detail-row:last-child { border-bottom: none; }
+    .detail-label { color: var(--text-muted); }
+    .detail-value { font-weight: 500; text-align: right; max-width: 60%; word-break: break-word; }
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 7px;
+      border-radius: var(--radius-sm);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--navy-soft);
+      color: var(--text-muted);
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .action-btn:hover { border-color: var(--cyan-glow); color: var(--cyan); }
+    .action-btn.primary {
+      background: var(--cyan-dim);
+      border-color: var(--cyan-glow);
+      color: var(--cyan);
+    }
+
+    /* Status colors */
+    .s-for-delivery  { background: var(--alert); }
+    .s-confirmed     { background: var(--cyan); }
+    .s-paid          { background: var(--green); }
+    .s-delivered     { background: #2c4a6e; }
+    .s-lead          { background: #4a5568; }
+    .s-not-confirmed { background: var(--yellow); }
+    .s-cancelled     { background: #6b2b2b; }
+
+    .badge-for-delivery  { background: var(--alert-dim); color: var(--alert); }
+    .badge-confirmed     { background: var(--cyan-dim); color: var(--cyan); }
+    .badge-paid          { background: var(--green-dim); color: var(--green); }
+    .badge-delivered     { background: rgba(44,74,110,0.5); color: #6fa3d8; }
+    .badge-lead          { background: rgba(74,85,104,0.5); color: #9ba5b4; }
+    .badge-not-confirmed { background: var(--yellow-dim); color: var(--yellow); }
+    .badge-cancelled     { background: rgba(107,43,43,0.5); color: #e06b6b; }
+
+    /* ── EMPTY / ERROR states ── */
+    .state-box {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .state-box .state-icon { font-size: 36px; margin-bottom: 10px; }
+    .state-box p { font-size: 13px; line-height: 1.6; }
+    .state-box a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ── CONFIG MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: flex-end;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #152235;
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%; max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 20px 32px;
+    }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--navy-card);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+    .modal h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--cyan-glow); }
+    .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+    .modal-save {
+      width: 100%;
+      margin-top: 4px;
+      background: var(--cyan);
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 11px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-save:hover { opacity: 0.88; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1E3A5F;
+      border: 1px solid var(--cyan-glow);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 18px;
+      white-space: nowrap;
+      z-index: 200;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── SETUP SCREEN ── */
+    .setup-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .setup-icon { font-size: 48px; margin-bottom: 16px; }
+    .setup-screen h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .setup-screen p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 300px;
+      margin-bottom: 24px;
+    }
+    .setup-btn {
+      background: var(--cyan);
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 28px;
+      cursor: pointer;
+    }
+
+    /* ── NAV DOTS ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--navy-soft);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 12px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px 16px;
+      border-radius: var(--radius-sm);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .nav-item.active { color: var(--cyan); }
+    .nav-item svg { width: 20px; height: 20px; }
+    .page-body { padding-bottom: 70px; }
+  </style>
+</head>
+<body>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>⚙️ Connect to Google Sheet</h3>
+    <div class="form-group">
+      <label class="form-label">Apps Script Web App URL</label>
+      <input class="form-input" id="cfg-url" type="url" placeholder="https://script.google.com/macros/s/.../exec" />
+      <p class="form-hint">Your deployed Apps Script URL — the same one your staff PC uses. The PWA calls it as a read-only data source.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Access Token / Password (optional)</label>
+      <input class="form-input" id="cfg-token" type="password" placeholder="Leave blank if not set" />
+      <p class="form-hint">If your Apps Script has password protection, enter it here.</p>
+    </div>
+    <button class="modal-save" onclick="saveConfig()">Save & Connect</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="page-body" id="appRoot">
+  <!-- Rendered by JS -->
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const CFG_KEY = 'obs_pwa_config';
+let config = JSON.parse(localStorage.getItem(CFG_KEY) || 'null');
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let allOrders = [];
+let filteredOrders = [];
+let activeFilter = 'All';
+let searchQuery = '';
+let activeKpiFilter = null;
+let lastSync = null;
+let syncing = false;
+let expandedId = null;
+
+const STATUS_FILTERS = ['All', 'For Delivery', 'Confirmed', 'Paid', 'Lead', 'Delivered'];
+
+const STATUS_META = {
+  'For Delivery':    { dot: 's-for-delivery',  badge: 'badge-for-delivery',  label: 'For Delivery' },
+  'Confirmed':       { dot: 's-confirmed',      badge: 'badge-confirmed',     label: 'Confirmed' },
+  'Paid':            { dot: 's-paid',           badge: 'badge-paid',          label: 'Paid' },
+  'Delivered':       { dot: 's-delivered',      badge: 'badge-delivered',     label: 'Delivered' },
+  'Lead':            { dot: 's-lead',           badge: 'badge-lead',          label: 'Lead' },
+  'Not Yet Confirmed': { dot: 's-not-confirmed',badge: 'badge-not-confirmed', label: 'Not Yet Confirmed' },
+  'Cancelled':       { dot: 's-cancelled',      badge: 'badge-cancelled',     label: 'Cancelled' },
+};
+
+// ── MOCK DATA (used when no Apps Script is connected) ────────────────────────
+const MOCK_ORDERS = [
+  { id:'ORD-001', name:'Crisanto Dela Cruz', status:'For Delivery', hdd:'2TB', date:'2025-06-30', vessel:'MV Magsaysay', contact:'09171234567', tracking:'LMV-990123', amount:'₱2,500' },
+  { id:'ORD-002', name:'Ronaldo Macaraig',   status:'Confirmed',    hdd:'4TB', date:'2025-06-29', vessel:'Cariaga Shipping', contact:'09182345678', tracking:'', amount:'₱4,200' },
+  { id:'ORD-003', name:'Noel Santillan',     status:'Paid',         hdd:'1TB', date:'2025-06-29', vessel:'NSCP Lines', contact:'09193456789', tracking:'', amount:'₱1,500' },
+  { id:'ORD-004', name:'Efren Buenaventura', status:'For Delivery', hdd:'2TB', date:'2025-06-28', vessel:'Stolt-Nielsen', contact:'09204567890', tracking:'LMV-882034', amount:'₱2,500' },
+  { id:'ORD-005', name:'Danilo Reyes',       status:'Lead',         hdd:'5TB', date:'2025-06-28', vessel:'', contact:'09215678901', tracking:'', amount:'₱6,500' },
+  { id:'ORD-006', name:'Marlon Espiritu',    status:'Delivered',    hdd:'2TB', date:'2025-06-27', vessel:'Aboitiz SuperFerry', contact:'09226789012', tracking:'LMV-770928', amount:'₱2,500' },
+  { id:'ORD-007', name:'Alfredo Coronado',   status:'Not Yet Confirmed', hdd:'4TB', date:'2025-06-27', vessel:'Evergreen Marine', contact:'09237890123', tracking:'', amount:'₱4,200' },
+];
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function slugify(s) { return (s||'').toLowerCase().replace(/\s+/g,'-'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg, duration=2400) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function timeAgo(d) {
+  if (!d) return '';
+  const s = Math.floor((Date.now() - d) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  return Math.floor(s/3600) + 'h ago';
+}
+
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+function openConfig() {
+  if (config) {
+    document.getElementById('cfg-url').value = config.url || '';
+    document.getElementById('cfg-token').value = config.token || '';
+  }
+  document.getElementById('configModal').classList.add('open');
+}
+function closeConfig() {
+  document.getElementById('configModal').classList.remove('open');
+}
+document.getElementById('configModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('configModal')) closeConfig();
+});
+function saveConfig() {
+  const url = document.getElementById('cfg-url').value.trim();
+  if (!url) { showToast('⚠️ Enter your Apps Script URL'); return; }
+  config = { url, token: document.getElementById('cfg-token').value.trim() };
+  localStorage.setItem(CFG_KEY, JSON.stringify(config));
+  closeConfig();
+  showToast('✅ Connected — syncing now…');
+  fetchOrders();
+}
+
+// ── FETCH ────────────────────────────────────────────────────────────────────
+async function fetchOrders() {
+  if (syncing) return;
+  syncing = true;
+  renderHeader();
+
+  if (!config) {
+    // Use demo data
+    await new Promise(r => setTimeout(r, 600));
+    allOrders = MOCK_ORDERS;
+    lastSync = Date.now();
+    syncing = false;
+    applyFilters();
+    renderHeader();
+    renderTicker();
+    return;
+  }
+
+  try {
+    let url = config.url + '?pwa=getOrders';
+    if (config.token) url += '&token=' + encodeURIComponent(config.token);
+
+    const res = await fetch(url);
+    const json = await res.json();
+    // Expect: { orders: [ {id,name,status,hdd,date,vessel,contact,tracking,amount}, ... ] }
+    allOrders = Array.isArray(json.orders) ? json.orders : Array.isArray(json) ? json : MOCK_ORDERS;
+    lastSync = Date.now();
+    showToast('✅ Synced');
+  } catch(e) {
+    console.error(e);
+    allOrders = MOCK_ORDERS;
+    lastSync = Date.now();
+    showToast('⚠️ Could not reach sheet — showing cached data');
+  }
+
+  syncing = false;
+  applyFilters();
+  renderHeader();
+  renderTicker();
+}
+
+// ── FILTER ────────────────────────────────────────────────────────────────────
+function applyFilters() {
+  let list = [...allOrders];
+  const filterStatus = activeKpiFilter || (activeFilter !== 'All' ? activeFilter : null);
+  if (filterStatus) list = list.filter(o => o.status === filterStatus);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(o =>
+      (o.name||'').toLowerCase().includes(q) ||
+      (o.id||'').toLowerCase().includes(q) ||
+      (o.vessel||'').toLowerCase().includes(q) ||
+      (o.contact||'').toLowerCase().includes(q)
+    );
+  }
+  filteredOrders = list;
+  renderOrders();
+  renderKPIs();
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  activeKpiFilter = null;
+  applyFilters();
+}
+function setKpiFilter(status) {
+  if (activeKpiFilter === status) {
+    activeKpiFilter = null;
+    activeFilter = 'All';
+  } else {
+    activeKpiFilter = status;
+    activeFilter = 'All';
+  }
+  applyFilters();
+}
+
+// ── RENDER HEADER ─────────────────────────────────────────────────────────────
+function renderHeader() {
+  const syncText = lastSync ? timeAgo(lastSync) : 'never';
+  document.querySelector('.sync-btn')?.classList.toggle('spinning', syncing);
+  const el = document.querySelector('.last-sync');
+  if (el) el.textContent = 'Synced ' + syncText;
+}
+
+// ── RENDER TICKER ─────────────────────────────────────────────────────────────
+function renderTicker() {
+  const active = allOrders.filter(o => ['For Delivery','Confirmed','Paid'].includes(o.status));
+  const items = active.length ? active : allOrders.slice(0,6);
+  const html = items.map(o => {
+    const m = STATUS_META[o.status] || {};
+    return `<span class="ticker-item"><span class="status-dot ${m.dot||''}"></span><span class="name">${esc(o.name)}</span> · ${esc(o.status)} · ${esc(o.hdd||'')}</span>`;
+  }).join('');
+  // duplicate for infinite loop
+  const el = document.querySelector('.ticker-track');
+  if (el) el.innerHTML = html + html;
+}
+
+// ── RENDER KPIs ───────────────────────────────────────────────────────────────
+function renderKPIs() {
+  const count = s => allOrders.filter(o => o.status === s).length;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayCount = allOrders.filter(o => (o.date||'').startsWith(todayStr)).length;
+
+  const cards = [
+    { cls:'kpi-delivery',  icon:'🚚', val:count('For Delivery'),  label:'For Delivery', filter:'For Delivery' },
+    { cls:'kpi-confirmed', icon:'📋', val:count('Confirmed'),      label:'Confirmed',    filter:'Confirmed' },
+    { cls:'kpi-paid',      icon:'💰', val:count('Paid'),           label:'Paid',         filter:'Paid' },
+    { cls:'kpi-today',     icon:'📅', val:todayCount,              label:'Today\'s Orders', filter:null },
+  ];
+
+  const wrap = document.getElementById('kpiGrid');
+  if (!wrap) return;
+  wrap.innerHTML = cards.map(c => `
+    <div class="kpi-card ${c.cls} ${activeKpiFilter===c.filter?'active':''}" onclick="${c.filter?`setKpiFilter('${c.filter}')`:''}">
+      <div class="kpi-icon">${c.icon}</div>
+      <div class="kpi-value">${c.val}</div>
+      <div class="kpi-label">${c.label}</div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER ORDERS ─────────────────────────────────────────────────────────────
+function renderOrders() {
+  const wrap = document.getElementById('ordersList');
+  if (!wrap) return;
+
+  if (!filteredOrders.length) {
+    wrap.innerHTML = `<div class="state-box"><div class="state-icon">🔍</div><p>No orders match your filter.<br>Try a different status or search term.</p></div>`;
+    return;
+  }
+
+  wrap.innerHTML = filteredOrders.map(o => {
+    const m = STATUS_META[o.status] || { dot:'s-lead', badge:'badge-lead', label:o.status };
+    const isExp = expandedId === o.id;
+    return `
+    <div class="order-card ${isExp?'expanded':''}" onclick="toggleExpand('${esc(o.id)}')">
+      <div class="status-indicator ${m.dot}"></div>
+      <div class="order-main">
+        <div class="order-name">${esc(o.name)}</div>
+        <div class="order-meta">${esc(o.id||'')}${o.hdd ? ' · ' + esc(o.hdd) : ''}${o.maritime==='Yes' ? ' · ⚓ Maritime' : ''}</div>
+      </div>
+      <div class="order-badge ${m.badge}">${m.label}</div>
+      ${isExp ? `
+      <div class="order-detail" onclick="event.stopPropagation()">
+        ${o.fbName       ? `<div class="order-detail-row"><span class="detail-label">FB Name</span><span class="detail-value">${esc(o.fbName)}</span></div>` : ''}
+        ${o.contact      ? `<div class="order-detail-row"><span class="detail-label">Contact</span><span class="detail-value">${esc(o.contact)}</span></div>` : ''}
+        ${o.address      ? `<div class="order-detail-row"><span class="detail-label">Address</span><span class="detail-value">${esc(o.address)}</span></div>` : ''}
+        ${o.landmark     ? `<div class="order-detail-row"><span class="detail-label">Landmark</span><span class="detail-value">${esc(o.landmark)}</span></div>` : ''}
+        ${o.hdd          ? `<div class="order-detail-row"><span class="detail-label">HDD</span><span class="detail-value">${esc(o.hdd)} ${o.format ? '· ' + esc(o.format) : ''}</span></div>` : ''}
+        ${o.amount       ? `<div class="order-detail-row"><span class="detail-label">Amount</span><span class="detail-value">${esc(o.amount)}${o.paymentMethod ? ' · ' + esc(o.paymentMethod) : ''}</span></div>` : ''}
+        ${o.maritime     ? `<div class="order-detail-row"><span class="detail-label">Maritime</span><span class="detail-value">${esc(o.maritime)}</span></div>` : ''}
+        ${o.tracking     ? `<div class="order-detail-row"><span class="detail-label">Lalamove</span><span class="detail-value" style="word-break:break-all">${esc(o.tracking)}</span></div>` : ''}
+        ${o.riderStatus  ? `<div class="order-detail-row"><span class="detail-label">Rider</span><span class="detail-value">${esc(o.riderStatus)}</span></div>` : ''}
+        ${o.totalSize    ? `<div class="order-detail-row"><span class="detail-label">Est. Size</span><span class="detail-value">${esc(o.totalSize)}</span></div>` : ''}
+        ${o.date         ? `<div class="order-detail-row"><span class="detail-label">Date</span><span class="detail-value">${esc(o.date)}</span></div>` : ''}
+        ${o.notes        ? `<div class="order-detail-row"><span class="detail-label">Notes</span><span class="detail-value">${esc(o.notes)}</span></div>` : ''}
+        <div class="order-actions">
+          ${o.contact  ? `<a class="action-btn" href="tel:${esc(o.contact)}" onclick="event.stopPropagation()">📞 Call</a>` : ''}
+          ${o.tracking ? `<button class="action-btn" onclick="event.stopPropagation();copyText('${esc(o.tracking)}')">📋 Copy Link</button>` : ''}
+          <button class="action-btn primary" onclick="event.stopPropagation();openInSheet('${esc(o.id)}')">↗ Open in Sheet</button>
+        </div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderOrders();
+}
+
+function copyText(t) {
+  navigator.clipboard?.writeText(t).then(() => showToast('📋 Copied: ' + t));
+}
+
+function openInSheet(id) {
+  if (config?.url) window.open(config.url + '?view=orders&search=' + encodeURIComponent(id), '_blank');
+  else showToast('Connect your Apps Script first');
+}
+
+// ── INITIAL RENDER ─────────────────────────────────────────────────────────────
+function renderApp() {
+  const root = document.getElementById('appRoot');
+  root.innerHTML = `
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+      <div class="ticker-label">📡 Active</div>
+      <div class="ticker-track"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🛳️</div>
+        <div class="brand-name">Onboard<span>Stuff</span></div>
+      </div>
+      <div class="header-right">
+        <span class="last-sync">Synced never</span>
+        <button class="sync-btn" onclick="fetchOrders()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          Sync
+        </button>
+        <button class="sync-btn" onclick="openConfig()" style="background:transparent;border-color:var(--border);color:var(--text-muted)">⚙️</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- SEARCH -->
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" id="searchInput" type="search" placeholder="Search name, order ID, vessel…" oninput="onSearch(this.value)" />
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" id="kpiGrid">
+        ${[0,1,2,3].map(()=>`<div class="kpi-card kpi-skeleton"><div class="kpi-icon"> </div><div class="kpi-value"> </div><div class="kpi-label">Loading</div></div>`).join('')}
+      </div>
+
+      <!-- ORDERS -->
+      <div class="section-header">
+        <span class="section-title">Orders</span>
+        <span class="section-title" id="orderCount" style="color:var(--cyan)"></span>
+      </div>
+      <div class="filter-chips" id="filterChips">
+        ${STATUS_FILTERS.map(f=>`<button class="chip ${f==='All'?'active':''}" onclick="onChip(this,'${f}')">${f}</button>`).join('')}
+      </div>
+      <div class="orders-list" id="ordersList">
+        <div class="state-box"><div class="state-icon">🌊</div><p>Loading orders…</p></div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="openConfig()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Connect
+      </button>
+    </nav>
+  `;
+  fetchOrders();
+}
+
+function onSearch(val) {
+  searchQuery = val;
+  applyFilters();
+  const el = document.getElementById('orderCount');
+  if (el) el.textContent = filteredOrders.length + ' shown';
+}
+
+function onChip(el, filter) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeKpiFilter = null;
+  setFilter(filter);
+}
+
+// ── PWA SERVICE WORKER ────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+renderApp();
+</script>
+</body>
+</html>
