@@ -86,6 +86,7 @@
     background:radial-gradient(circle at 32% 28%, #F2DFA6, var(--gold) 70%);
     display:flex;align-items:center;justify-content:center;}
   .topbar-mark svg{width:18px;height:18px;}
+  .topbar-mark img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
   .topbar-text{min-width:0;}
   .topbar-text h1{margin:0;font-size:15px;font-weight:800;line-height:1.1;}
   .topbar-text p{margin:1px 0 0;font-size:11px;color:rgba(255,255,255,.5);
@@ -109,9 +110,9 @@
   .stat-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;}
   .stat-card .v{font-size:22px;font-weight:800;line-height:1;}
   .stat-card .l{font-size:11px;color:var(--muted);font-weight:700;margin-top:5px;text-transform:uppercase;letter-spacing:.3px;}
-  .stat-card.accent{background:linear-gradient(135deg,#4D5A73,#52617D);border-color:#4D5A73;}
-  .stat-card.accent .v{color:var(--gold);}
-  .stat-card.accent .l{color:rgba(255,255,255,.75);}
+  .stat-card.accent{background:linear-gradient(135deg,#FBF1D9,#F6E6BC);border-color:#E9D193;}
+  .stat-card.accent .v{color:#7A5C12;}
+  .stat-card.accent .l{color:#8C6A1E;}
 
   .alert-banner{display:flex;align-items:center;gap:10px;background:var(--warn-bg);
     border:1px solid #FDE68A;color:var(--warn);border-radius:14px;padding:11px 14px;margin-bottom:12px;font-size:13px;font-weight:700;}
@@ -266,7 +267,7 @@
         </div>
         <div class="l-field">
           <label>PIN</label>
-          <input id="loginPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="current-password">
+          <input id="loginPin" type="password" placeholder="••••" autocomplete="current-password">
         </div>
         <div class="login-error" id="loginError"></div>
         <button class="login-btn" id="loginBtn" type="button">Log In</button>
@@ -280,7 +281,7 @@
     <div class="topbar">
       <div class="topbar-id">
         <div class="topbar-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v7M12 15v7M4.2 7.8l5 3M14.8 13.2l5 3M19.8 7.8l-5 3M9.2 13.2l-5 3"></path></svg>
+          <img src="icon-192.png" alt="Onboard Stuff">
         </div>
         <div class="topbar-text">
           <h1 id="topbarTitle">Dashboard</h1>
