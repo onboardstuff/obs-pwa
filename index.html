@@ -53,6 +53,7 @@
     border:2px solid rgba(255,255,255,.18);
   }
   .login-mark svg{width:38px;height:38px;}
+  .login-mark img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
   .login-title{text-align:center;color:#fff;font-size:22px;font-weight:800;margin:0 0 4px;letter-spacing:.2px;}
   .login-sub{text-align:center;color:rgba(255,255,255,.55);font-size:13px;margin:0 0 28px;}
   .login-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
@@ -108,9 +109,9 @@
   .stat-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;}
   .stat-card .v{font-size:22px;font-weight:800;line-height:1;}
   .stat-card .l{font-size:11px;color:var(--muted);font-weight:700;margin-top:5px;text-transform:uppercase;letter-spacing:.3px;}
-  .stat-card.accent{background:linear-gradient(135deg,var(--navy),var(--navy-2));border-color:var(--navy);}
+  .stat-card.accent{background:linear-gradient(135deg,#4D5A73,#52617D);border-color:#4D5A73;}
   .stat-card.accent .v{color:var(--gold);}
-  .stat-card.accent .l{color:rgba(255,255,255,.55);}
+  .stat-card.accent .l{color:rgba(255,255,255,.75);}
 
   .alert-banner{display:flex;align-items:center;gap:10px;background:var(--warn-bg);
     border:1px solid #FDE68A;color:var(--warn);border-radius:14px;padding:11px 14px;margin-bottom:12px;font-size:13px;font-weight:700;}
@@ -254,7 +255,7 @@
   <div class="login-screen hidden" id="loginScreen">
     <div class="login-wrap">
       <div class="login-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#10182B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v7M12 15v7M4.2 7.8l5 3M14.8 13.2l5 3M19.8 7.8l-5 3M9.2 13.2l-5 3"></path></svg>
+        <img src="icon-192.png" alt="Onboard Stuff">
       </div>
       <h1 class="login-title">Onboard Stuff</h1>
       <p class="login-sub">Operations — sign in to continue</p>
@@ -265,12 +266,12 @@
         </div>
         <div class="l-field">
           <label>PIN</label>
-          <input id="loginPin" type="password" placeholder="••••" autocomplete="current-password">
+          <input id="loginPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="current-password">
         </div>
         <div class="login-error" id="loginError"></div>
         <button class="login-btn" id="loginBtn" type="button">Log In</button>
       </div>
-      <p class="login-foot">Onboard Stuff Ops · v1.0</p>
+      <p class="login-foot">Onboard Stuff © 2025</p>
     </div>
   </div>
 
